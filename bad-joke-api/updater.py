@@ -5,7 +5,7 @@ import _thread
 from constants import EXIT_CODE_RESTART_IMMEDIATELY
 
 
-SLEEP_DURATION = 5
+SLEEP_DURATION = 15
 
 
 def updater_task():
