@@ -1,7 +1,7 @@
 #!/bin/bash
 
 while true; do
-    python3 bad-joke-api/main.py
+    FLASK_APP=bad-joke-api/main.py flask run
     exit_code=$?
 
     if [ $exit_code == 2 ]
