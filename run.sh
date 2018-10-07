@@ -1,7 +1,7 @@
 #!/bin/bash
 
 while true; do
-    python3.6 bad-joke-api/main.py
+    python3 bad-joke-api/main.py
     exit_code=$?
 
     if [ $exit_code == 2 ]
