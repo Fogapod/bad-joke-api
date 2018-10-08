@@ -1,5 +1,5 @@
+import asyncio
 import os
-import time
 import _thread
 
 from constants import EXIT_CODE_RESTART_IMMEDIATELY
@@ -8,20 +8,36 @@ from constants import EXIT_CODE_RESTART_IMMEDIATELY
 SLEEP_DURATION = 15
 
 
-def updater_task():
-    while True:
-        time.sleep(SLEEP_DURATION)
-        # TODO: logger
-        print('[GIT] Checking for updates')
-        output = os.popen('git pull').read()
-        if output == 'Already up to date.\n':  # no updates
-            continue
-        if output.startswith('Updating'):  # update begun
-            print('[GIT] Pulled update, restarting to apply changes')
-            os.sys.exit(EXIT_CODE_RESTART_IMMEDIATELY)
-        
-        print('[GIT] Something unexpected happened: ' + output)
-        time.sleep(SLEEP_DURATION)  # 2x sleep time
+async def updater_task(app):
+    try:
+        while True:
+            await asyncio.sleep(SLEEP_DURATION)
+            # TODO: logger
+            print('[GIT] Checking for updates')
+
+            try:
+                process = await asyncio.create_subprocess_exec(
+                    'git', 'pull', stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE
+                )
+            except FileNotFoundError:
+                print('[GIT] No git executable found!')
+                print('[GIT] Stopping updater')
+                break
+
+            stdout, stderr = await process.communicate()
+
+            if stdout == b'Already up to date.\n':  # no updates
+                continue
+            if stdout.startswith(b'Updating'):  # update begun
+                print('[GIT] Updated local files, restarting to apply changes')
+                # TODO: call app destructor
+                os.sys.exit(EXIT_CODE_RESTART_IMMEDIATELY)
+
+            print(f'[GIT] Something unexpected happened: {stdout.decode()}')
+            asyncio.sleep(SLEEP_DURATION)  # 2x sleep time
+    except (asyncio.CancelledError, RuntimeError):
+        pass
         
 
 def run_updater_thread():
