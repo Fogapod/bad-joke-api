@@ -26,7 +26,7 @@ async def gitlab_webhook(req):
         return web.Response(text='', status=401)
 
     # TODO: use logger
-    print('[GIT] Recieved update from webhook, trying to pull ...')
+    print('[GIT] Received update from webhook, trying to pull ...')
     asyncio.ensure_future(updater(req.app))
     return web.Response()
 
