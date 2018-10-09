@@ -4,7 +4,7 @@ import os
 from aiohttp import web
 
 from config import Config
-from updater import updater_task
+from updater import updater
 
 
 routes = web.RouteTableDef()
@@ -20,18 +20,19 @@ async def version(req):
     output = await loop.run_in_executor(None, os.popen, program)
     return web.Response(text=output.read())
 
-async def start_background_tasks(app):
-    app['updater'] = app.loop.create_task(updater_task(app))
+@routes.post('/gitlab-webhook')
+async def gitlab_webhook(req):
+    if req.headers.get('X-Gitlab-Token') != req.app['config']['gitlab-webhook-token']:
+        return web.Response(text='', status=401)
 
-async def cleanup_background_tasks(app):
-    app['updater'].cancel()
-    await app['updater']
-
+    # TODO: use logger
+    print('[GIT] Recieved update from webhook, trying to pull ...')
+    asyncio.ensure_future(updater(req.app))
+    return web.Response()
 
 if __name__ == '__main__':
     app = web.Application()
-    app.on_startup.append(start_background_tasks)
-    app.on_cleanup.append(cleanup_background_tasks)
+    app['config'] = Config('config.yaml')
     app.router.add_routes(routes)
 
     web.run_app(app)

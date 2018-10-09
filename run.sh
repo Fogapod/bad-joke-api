@@ -1,6 +1,9 @@
 #!/bin/bash
 
 while true; do
+    # git reset --hard
+    git pull origin master
+
     python3 bad-joke-api/main.py
     exit_code=$?
 
@@ -15,9 +18,6 @@ while true; do
     else
         seconds=15
     fi
-
-    # git reset --hard
-    git pull origin master
 
     for ((second=$seconds; second > 0; second--))
     do
