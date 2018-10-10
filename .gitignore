@@ -1,7 +1,8 @@
-# Configs
+### Configs ###
 *.json
 *.yaml
 
+### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -23,10 +24,6 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-# Flask stuff:
-instance/
-.webassets-cache
-
 # Environments
 .env
 .venv
@@ -35,3 +32,22 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+### Vim ###
+# Swap
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Session
+Session.vim
+
+# Temporary
+.netrwhist
+*~
+# Auto-generated tag files
+tags
+# Persistent undo
+[._]*.un~

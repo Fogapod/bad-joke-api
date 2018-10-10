@@ -3,7 +3,9 @@ import os
 
 from aiohttp import web
 
+from reporter import send_report
 from config import Config
+from log import setup_logging
 from updater import updater
 
 
@@ -32,7 +34,10 @@ async def gitlab_webhook(req):
 
 if __name__ == '__main__':
     app = web.Application()
-    app['config'] = Config('config.yaml')
     app.router.add_routes(routes)
+
+    app['config'] = Config('config.yaml')
+
+    setup_logging(app)
 
     web.run_app(app)
