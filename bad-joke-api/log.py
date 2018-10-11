@@ -6,6 +6,11 @@ from datetime import datetime
 
 from reporter import send_report
 
+
+
+git_log = logging.getLogger('git')
+
+
 class ErrorReportHandler(logging.StreamHandler):
     def __init__(self, app, **kwargs):
         super().__init__(**kwargs)
@@ -15,17 +20,18 @@ class ErrorReportHandler(logging.StreamHandler):
         if record.levelno == logging.ERROR:
             # TODO: write to file
             # TODO: error caching
-            coro = self.app.loop.run_in_executor(
+            self.app.loop.run_in_executor(
                 None, send_report, self._format_report_text(record), self.app)
-            asyncio.ensure_future(coro)
 
         return super().emit(record)
 
     def _format_report_text(self, record):
         nl = '\n'
 
+        # TODO: add request formatting
         return (
             f'Exception: {record.msg} ({record.exc_info[0].__name__})\n'
+            f'Request: {record.request}\n'
             f'Time: {datetime.utcfromtimestamp(record.created).strftime("%Y-%m-%d %H:%M:%S UTC")}\n'
             f'\n'
             f'Traceback:\n'
@@ -44,3 +50,8 @@ def setup_logging(app):
     server_log = logging.getLogger('aiohttp.server')
     handler = ErrorReportHandler(app)
     server_log.addHandler(handler)
+
+    git_log.setLevel(logging.INFO)
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter('[GIT] %(msg)s'))
+    git_log.addHandler(handler)
