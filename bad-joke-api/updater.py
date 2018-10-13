@@ -6,7 +6,6 @@ from log import git_log
 
 
 async def updater(app):
-    # TODO: logger
     git_log.info('Checking for updates')
 
     try:

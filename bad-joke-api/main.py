@@ -10,6 +10,14 @@ from log import git_log, setup_logging
 from updater import updater
 
 
+try:
+    import uvloop
+except ImportError:
+    print('Warning: uvloop library not installed or not supported on your system')
+    print('Warning: Using default asyncio event loop')
+else:
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
 routes = web.RouteTableDef()
 
 @web.middleware
