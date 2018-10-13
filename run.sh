@@ -4,7 +4,7 @@ while true; do
     # git reset --hard
     git pull origin master
 
-    python3 bad-joke-api/main.py
+    python3 bad-joke-api/app.py
     exit_code=$?
 
     if [ $exit_code == 2 ]
