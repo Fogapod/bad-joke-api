@@ -40,4 +40,4 @@ if __name__ == '__main__':
 
     setup_logging(app)
 
-    web.run_app(app)
+    web.run_app(app, port=app['config']['app-port'])
