@@ -1,13 +1,11 @@
-import asyncio
-import os
 import logging
 
 from aiohttp import web
 
 from reporter import send_report
+from routes import routes
 from config import Config
-from log import git_log, setup_logging
-from updater import updater
+from log import setup_logging
 
 
 try:
@@ -18,7 +16,6 @@ except ImportError:
 else:
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
-routes = web.RouteTableDef()
 
 @web.middleware
 async def middleware(req, handler):
@@ -33,25 +30,6 @@ async def middleware(req, handler):
 
     return resp
 
-@routes.get('/')
-async def index(req):
-    return web.Response(text="It works")
-
-@routes.get('/version')
-async def version(req):
-    loop = asyncio.get_event_loop()
-    program = 'git show -s HEAD --format="Currently on commit made %cr by %cn: %s (%H)"'
-    output = await loop.run_in_executor(None, os.popen, program)
-    return web.Response(text=output.read())
-
-@routes.post('/gitlab-webhook')
-async def gitlab_webhook(req):
-    if req.headers.get('X-Gitlab-Token') != req.app['config']['gitlab-webhook-token']:
-        return web.Response(text='', status=401)
-
-    git_log.info('Received update from webhook, trying to pull ...')
-    asyncio.ensure_future(updater(req.app))
-    return web.Response()
 
 if __name__ == '__main__':
     app = web.Application(middlewares=[middleware])

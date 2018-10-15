@@ -31,7 +31,7 @@ class ErrorReportHandler(logging.StreamHandler):
         # TODO: add request formatting
         return (
             f'Exception: {record.msg} ({record.exc_info[0].__name__})\n'
-            f'Request: {record.request}\n'
+            f'Request: {getattr(record, "request")}\n'
             f'Time: {datetime.utcfromtimestamp(record.created).strftime("%Y-%m-%d %H:%M:%S UTC")}\n'
             f'\n'
             f'Traceback:\n'
